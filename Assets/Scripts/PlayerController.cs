@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public int numofWallJumps = 1;
 
     public float speed;
     public float horzInput;
@@ -80,6 +81,10 @@ public class PlayerController : MonoBehaviour
             isWallSliding = false;
         }
         
+        if(groundCheck.grounded)
+        {
+            numofWallJumps = 1;
+        }
 
     }
 
@@ -89,11 +94,12 @@ public class PlayerController : MonoBehaviour
         {
             playerRB.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
         }
-        else if((isWallSliding || wallCheck.Walled) && horzInput != 0)
+        else if((isWallSliding || wallCheck.Walled) && horzInput != 0 && numofWallJumps > 0)
         {
             Vector2 forceToAdd = new Vector2(wallJumpForce * wallJumpDirection.x * horzInput, wallJumpForce * wallJumpDirection.y);
             playerRB.velocity = new Vector2(playerRB.velocity.x, 0);
             playerRB.AddForce(forceToAdd, ForceMode2D.Impulse);
+            numofWallJumps--;
         }
     }
 
