@@ -8,8 +8,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] GameObject mainCamera;
     [SerializeField] Quaternion CameraY;
     [SerializeField] float rotationSpeed = 50.0f;
-    public float mouseY;
-    public float mouseX;
+    [SerializeField] float movementSpeed = 5.0f;
+    private float mouseY;
+    private float mouseX;
+    private float horzInput;
+    private float vertInput;
     [SerializeField] bool yTooHigh;
     [SerializeField] bool yTooNotHigh;
     
@@ -26,9 +29,13 @@ public class PlayerController : MonoBehaviour
         //set mousex and y variables to actual mouse x and y
         mouseY = Input.GetAxis("Mouse Y");
         mouseX = Input.GetAxis("Mouse X");
+        //set horzInput and vertInput to actual inputs
+        horzInput = Input.GetAxis("Horizontal");
+        vertInput = Input.GetAxis("Vertical");
         //call functions
         CameraControl();
         MouseYClamp();
+        playerMovement();
         //set quaternion to rotation of camera
         CameraY = mainCamera.transform.rotation;
         Debug.Log("mouseY =" + mouseY);
@@ -65,5 +72,11 @@ public class PlayerController : MonoBehaviour
     } else {
         yTooNotHigh = false;
     }
+    }
+
+    //basic movement
+    public void playerMovement() {
+        transform.Translate(Vector3.forward * Time.deltaTime * vertInput * movementSpeed);
+        transform.Translate(Vector3.right * Time.deltaTime * horzInput * (movementSpeed * 0.33f));
     }
 }

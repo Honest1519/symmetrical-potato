@@ -423,8 +423,7 @@ MonoBehaviour:
   mainCamera: {fileID: 364719076}
   CameraY: {x: 0, y: 0, z: 0, w: 0}
   rotationSpeed: 50
-  mouseY: 0
-  mouseX: 0
+  movementSpeed: 5
   yTooHigh: 0
   yTooNotHigh: 0
 --- !u!54 &1587853418
