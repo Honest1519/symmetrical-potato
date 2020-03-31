@@ -4,79 +4,50 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    //variables for game object, the camera's rotation (in a quaternion), bools for quaternion clamping, the mouses rotation and rotation speed in floats.
-    [SerializeField] GameObject mainCamera;
-    [SerializeField] Quaternion CameraY;
-    [SerializeField] float rotationSpeed = 50.0f;
-    [SerializeField] float movementSpeed = 5.0f;
+    // Define float variables
     private float mouseY;
     private float mouseX;
     private float horzInput;
     private float vertInput;
-    [SerializeField] bool yTooHigh;
-    [SerializeField] bool yTooNotHigh;
-    
-    // Start is called before the first frame update.
+    private float xRotation = 0f;
+    [SerializeField] float sensitivity = 100.0f;
+    [SerializeField] float movementSpeed = 5.0f;
+    [SerializeField] GameObject mainCamera;
+    // Start is called before the first frame update
     void Start()
     {
-    //Lock the cursor to the center of the screen.
-    Cursor.lockState = CursorLockMode.Confined;
+        Cursor.lockState = CursorLockMode.Locked; 
     }
 
-    // Update is called once per frame.
+    // Update is called once per frame
     void Update()
     {
-        //set mousex and y variables to actual mouse x and y
-        mouseY = Input.GetAxis("Mouse Y");
-        mouseX = Input.GetAxis("Mouse X");
-        //set horzInput and vertInput to actual inputs
-        horzInput = Input.GetAxis("Horizontal");
-        vertInput = Input.GetAxis("Vertical");
-        //call functions
+    // Set mouseX and Y variables with appropriate operations.
+        mouseY = Input.GetAxis("Mouse Y") * sensitivity * Time.deltaTime;
+        mouseX = Input.GetAxis("Mouse X") * sensitivity * Time.deltaTime;
+    // Do the same for horizontal and vertical movement.
+        horzInput = Input.GetAxis("Horizontal") * (movementSpeed * 0.33f) * Time.deltaTime;
+        vertInput = Input.GetAxis("Vertical") * movementSpeed * Time.deltaTime;
+    // Call functions
         CameraControl();
-        MouseYClamp();
         playerMovement();
-        //set quaternion to rotation of camera
-        CameraY = mainCamera.transform.rotation;
-        Debug.Log("mouseY =" + mouseY);
     }
 
-   //function for camera control.
-    public void CameraControl() {
-    //rotate the camera on y axis when mouse y changes (but only on both false, otherwise return to false)
-    if(!yTooHigh && !yTooNotHigh) {
-    mainCamera.transform.Rotate(-Vector3.right, mouseY * Time.deltaTime * rotationSpeed);
-    } 
-    if(yTooHigh) {
-    mainCamera.transform.Rotate(Vector3.right, 1 * Time.deltaTime * rotationSpeed);
-    } 
-    if(yTooNotHigh) {
-    mainCamera.transform.Rotate(Vector3.right, -1 * Time.deltaTime * rotationSpeed);
-    }
-    //rotate the camera on x axis when mouse x changes.
-    transform.Rotate(Vector3.up, mouseX * Time.deltaTime * rotationSpeed);
-    //mainCamera.transform.position = new Vector3(Mathf.Clamp(transform.position.x, minX, maxX), transform.position.y, transform.position.z);
+    private void CameraControl()
+    {
+        //actual rotation
+        transform.Rotate(Vector3.up, mouseX);
+        //clamp!
+        xRotation -= mouseY;
+        xRotation = Mathf.Clamp(xRotation, -90, 90);
+        //actual rotation but this time for y.
+        mainCamera.transform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
     }
 
-    //uhoh uhoh clamping.
-    public void MouseYClamp() {
-    //negative quaternion value to boolean.
-    if(CameraY.x < -0.5){
-    yTooHigh = true;
-    } else {
-        yTooHigh = false;
-    }
-    //positive quaternion value to boolean.
-    if(CameraY.x > 0.5){
-    yTooNotHigh = true;
-    } else {
-        yTooNotHigh = false;
-    }
-    }
-
-    //basic movement
-    public void playerMovement() {
-        transform.Translate(Vector3.forward * Time.deltaTime * vertInput * movementSpeed);
-        transform.Translate(Vector3.right * Time.deltaTime * horzInput * (movementSpeed * 0.33f));
+    private void playerMovement()
+    {
+        //movement i guess?
+        transform.Translate(Vector3.forward * vertInput);
+        transform.Translate(Vector3.right * horzInput);
     }
 }
