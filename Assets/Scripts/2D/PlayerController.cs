@@ -13,6 +13,8 @@ public class PlayerController : MonoBehaviour
     public float wallJumpForce;
 
     public bool isWallSliding = false;
+    public bool doubleJumpEnable = false;
+    public bool canDoubleJump;
 
     public string facing = "Right";
 
@@ -93,6 +95,8 @@ public class PlayerController : MonoBehaviour
         if(groundCheck.grounded == true)
         {
             playerRB.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            canDoubleJump = true;
+            
         }
         else if((isWallSliding || wallCheck.Walled) && horzInput != 0 && numofWallJumps > 0)
         {
@@ -100,6 +104,12 @@ public class PlayerController : MonoBehaviour
             playerRB.velocity = new Vector2(playerRB.velocity.x, 0);
             playerRB.AddForce(forceToAdd, ForceMode2D.Impulse);
             numofWallJumps--;
+        }
+        else if(!groundCheck.grounded && !wallCheck.Walled && canDoubleJump && doubleJumpEnable)
+        {
+            playerRB.velocity = Vector2.zero;
+            playerRB.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            canDoubleJump = false;
         }
     }
 
